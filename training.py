@@ -52,9 +52,9 @@ print('cuda_name:', cuda_name)
 
 TRAIN_BATCH_SIZE = 1024
 TEST_BATCH_SIZE = 1024
-LR = 0.001
+LR = 0.0001
 LOG_INTERVAL = 20
-NUM_EPOCHS = 700
+NUM_EPOCHS = 600
 
 print('Learning rate: ', LR)
 print('Epochs: ', NUM_EPOCHS)
@@ -62,13 +62,13 @@ print('Epochs: ', NUM_EPOCHS)
 # Main program: iterate over different datasets
 for dataset in datasets:
     print('\nrunning on ', model_st + '_' + dataset)
-    processed_data_file_train = 'autodl-tmp/GraphDTA-master/data/processed/' + dataset + '_train.pt'
-    processed_data_file_test = 'autodl-tmp/GraphDTA-master/data/processed/' + dataset + '_test.pt'
+    processed_data_file_train = 'autodl-tmp/DoubleSG-DTA/data/processed/' + dataset + '_train.pt'
+    processed_data_file_test = 'autodl-tmp/DoubleSG-DTA/data/processed/' + dataset + '_test.pt'
     if ((not os.path.isfile(processed_data_file_train)) or (not os.path.isfile(processed_data_file_test))):
         print('please run create_data.py to prepare data in pytorch format!')
     else:
-        train_data = TestbedDataset(root='autodl-tmp/GraphDTA-master/data', dataset=dataset + '_train')
-        test_data = TestbedDataset(root='autodl-tmp/GraphDTA-master/data', dataset=dataset + '_test')
+        train_data = TestbedDataset(root='autodl-tmp/DoubleSG-DTA/data', dataset=dataset + '_train')
+        test_data = TestbedDataset(root='autodl-tmp/DoubleSG-DTA/data', dataset=dataset + '_test')
 
         # make data PyTorch mini-batch processing ready
         train_loader = DataLoader(train_data, batch_size=TRAIN_BATCH_SIZE, shuffle=True, num_workers=8,pin_memory=True)
@@ -84,7 +84,7 @@ for dataset in datasets:
         best_epoch = -1
         model_file_name = 'model_gin7_' + model_st + '_' + dataset + '.model'
         result_file_name = 'result_gin7_' + model_st + '_' + dataset + '.csv'
-        test_result_file = 'autodl-tmp/GraphDTA-master/' + 'test_total_result_gin7_' + model_st + '_' + dataset + '.csv'
+        test_result_file = 'autodl-tmp/DoubleSG-DTA/' + 'test_total_result_gin7_' + model_st + '_' + dataset + '.csv'
         path='model_gin7_GINConvNet_bindingdb.model'
         model.load_state_dict(torch.load(path))
         for epoch in range(NUM_EPOCHS):
