@@ -1,3 +1,9 @@
+'''
+Author: Yongtao Qian
+Time: 2023-2-5
+model: DoubleSG-DTA
+'''
+
 import numpy as np
 import pandas as pd
 import sys, os
@@ -40,11 +46,19 @@ def predicting(model, device, loader):
             total_labels = torch.cat((total_labels, data.y.view(-1, 1).cpu()), 0)
     return total_labels.numpy().flatten(), total_preds.numpy().flatten()
 
-
+'''
+Select one of the data sets for each training.
+0-->Davis
+1-->KIBA
+2-->bindingdb
+'''
 datasets = [['davis', 'kiba', 'bindingdb'][int(sys.argv[1])]]
+
+# Our models are stored in the models folder, named Ginconv
 modeling = [GINConvNet]
 model_st = modeling.__name__
 
+# You can have multiple GPUs running at the same time or a single GPU, please select the number of the free GPU
 cuda_name = "cuda:0"
 if len(sys.argv) > 3:
     cuda_name = "cuda:" + str(int(sys.argv[2]))
@@ -82,17 +96,25 @@ for dataset in datasets:
         best_mse = 1000
         best_ci = 0
         best_epoch = -1
-        model_file_name = 'model_gin7_' + model_st + '_' + dataset + '.model'
+        model_file_name = 'model_gin_' + model_st + '_' + dataset + '.model'
         result_file_name = 'result_gin7_' + model_st + '_' + dataset + '.csv'
-        test_result_file = 'autodl-tmp/DoubleSG-DTA/' + 'test_total_result_gin7_' + model_st + '_' + dataset + '.csv'
-        path='model_gin7_GINConvNet_bindingdb.model'
-        model.load_state_dict(torch.load(path))
+        test_result_file = 'autodl-tmp/DoubleSG-DTA/' + 'test_total_result_gin_' + model_st + '_' + dataset + '.csv'
+        
+        
+#         path='model_gin_GINConvNet_bindingdb.model'
+#         model.load_state_dict(torch.load(path))
+        
+        
+        # Start training 600 epochs
         for epoch in range(NUM_EPOCHS):
             train(model, device, train_loader, optimizer, epoch + 1)
             G, P = predicting(model, device, test_loader)
             ret = [epoch, rmse(G, P), mse(G, P), pearson(G, P), spearman(G, P), ci(G, P), get_rm2(G, P)]
+            
+            # Record the test set performance results for each round, in order，epoch, rmse(G, P), mse(G, P), pearson(G, P), spearman(G, P), ci(G, P), get_rm2(G, P)
             with open(test_result_file, 'a') as f:
                 f.write(','.join(map(str, ret)) + '\n')
+            # We train with the objective of minimising MSE
             if ret[2] < best_mse:
                 torch.save(model.state_dict(), model_file_name)
                 with open(result_file_name, 'w') as f:
