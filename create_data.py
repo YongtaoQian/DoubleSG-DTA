@@ -82,7 +82,7 @@ compound_iso_smiles = []
 for dt_name in ['Davis','KIBA','bindingdb']:
     opts = ['train', 'test']
     for opt in opts:
-        df = pd.read_csv('autodl-tmp/GraphDTA-master/data/' + dt_name + '_' + opt + '.csv')
+        df = pd.read_csv('autodl-tmp/DoubleSG-DTA/data/' + dt_name + '_' + opt + '.csv')
         compound_iso_smiles += list(df['compound_iso_smiles'])
 compound_iso_smiles = set(compound_iso_smiles)
 smile_graph = {}
@@ -93,16 +93,16 @@ for smile in compound_iso_smiles:
 datasets = ['Davis','KIBA','bindingdb']
 # convert to PyTorch data format
 for dataset in datasets:
-    processed_data_file_train = 'autodl-tmp/GraphDTA-master/data/processed/' + dataset + '_train.pt'
-    processed_data_file_test = 'autodl-tmp/GraphDTA-master/data/processed/' + dataset + '_test.pt'
+    processed_data_file_train = 'autodl-tmp/DoubleSG-DTA/data/processed/' + dataset + '_train.pt'
+    processed_data_file_test = 'autodl-tmp/DoubleSG-DTA/data/processed/' + dataset + '_test.pt'
     if ((not os.path.isfile(processed_data_file_train)) or (not os.path.isfile(processed_data_file_test))):
-        df = pd.read_csv('autodl-tmp/GraphDTA-master/data/' + dataset + '_train.csv')
+        df = pd.read_csv('autodl-tmp/DoubleSG-DTA/data/' + dataset + '_train.csv')
         train_drugs, train_prots, train_Y = list(df['compound_iso_smiles']), list(df['target_sequence']), list(
             df['affinity'])
         XT = [seq_cat(t) for t in train_prots]
         Xd = [seq_drug(t) for t in train_drugs]
         train_drugs, train_prots, train_Y, train_smiles = np.asarray(train_drugs), np.asarray(XT), np.asarray(train_Y), np.asarray(Xd)
-        df = pd.read_csv('autodl-tmp/GraphDTA-master/data/' + dataset + '_test.csv')
+        df = pd.read_csv('autodl-tmp/DoubleSG-DTA/data/' + dataset + '_test.csv')
         test_drugs, test_prots, test_Y = list(df['compound_iso_smiles']), list(df['target_sequence']), list(
             df['affinity'])
         XT = [seq_cat(t) for t in test_prots]
@@ -111,10 +111,10 @@ for dataset in datasets:
 
         # make data PyTorch Geometric ready
         print('preparing ', dataset + '_train.pt in pytorch format!')
-        train_data = TestbedDataset(root='autodl-tmp/GraphDTA-master/data', dataset=dataset + '_train', xd=train_drugs, xt=train_prots, y=train_Y, xs = train_smiles,
+        train_data = TestbedDataset(root='autodl-tmp/DoubleSG-DTA/data', dataset=dataset + '_train', xd=train_drugs, xt=train_prots, y=train_Y, xs = train_smiles,
                                     smile_graph=smile_graph)
         print('preparing ', dataset + '_test.pt in pytorch format!')
-        test_data = TestbedDataset(root='autodl-tmp/GraphDTA-master/data', dataset=dataset + '_test', xd=test_drugs, xt=test_prots, y=test_Y, xs = test_smiles,
+        test_data = TestbedDataset(root='autodl-tmp/DoubleSG-DTA/data', dataset=dataset + '_test', xd=test_drugs, xt=test_prots, y=test_Y, xs = test_smiles,
                                    smile_graph=smile_graph)
         print(processed_data_file_train, ' and ', processed_data_file_test, ' have been created')
     else:
