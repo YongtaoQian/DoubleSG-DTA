@@ -80,13 +80,13 @@ class GINConvNet(torch.nn.Module):
         self.conv5 = GINConv(nn5)
         self.bn5 = torch.nn.BatchNorm1d(dim)
         
-        nn6 = Sequential(Linear(dim, dim), ReLU(), Linear(dim, dim))
-        self.conv6 = GINConv(nn6)
-        self.bn6 = torch.nn.BatchNorm1d(dim)
+#         nn6 = Sequential(Linear(dim, dim), ReLU(), Linear(dim, dim))
+#         self.conv6 = GINConv(nn6)
+#         self.bn6 = torch.nn.BatchNorm1d(dim)
         
-        nn7 = Sequential(Linear(dim, dim), ReLU(), Linear(dim, dim))
-        self.conv7 = GINConv(nn6)
-        self.bn7 = torch.nn.BatchNorm1d(dim)
+#         nn7 = Sequential(Linear(dim, dim), ReLU(), Linear(dim, dim))
+#         self.conv7 = GINConv(nn6)
+#         self.bn7 = torch.nn.BatchNorm1d(dim)
         
         self.fc1_xd = Linear(dim, output_dim)
         # 1D convolution on protein sequence
@@ -121,10 +121,10 @@ class GINConvNet(torch.nn.Module):
         x = self.bn4(x)
         x = F.relu(self.conv5(x, edge_index))
         x = self.bn5(x)
-        x = F.relu(self.conv6(x, edge_index))
-        x = self.bn6(x)
-        x = F.relu(self.conv7(x, edge_index))
-        x = self.bn7(x)
+#         x = F.relu(self.conv6(x, edge_index))
+#         x = self.bn6(x)
+#         x = F.relu(self.conv7(x, edge_index))
+#         x = self.bn7(x)
         
         
         x = global_add_pool(x, batch)
