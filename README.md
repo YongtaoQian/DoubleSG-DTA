@@ -14,8 +14,8 @@ ginconv.py:pytorch code implementation of the DoubleSG-DTA model
 
 
 step3:run code
-1.python xxxxxx/xxxxx/create_data.py
-2.python xxxxx/xxxxxx/training.py num1,num2   (num1:num1 means select the data set, either 1,2,3,  num2:num2 indicates the number of cuda selected)
+1.python xxxxxx/xxxxx/load_data.py
+2.python xxxxx/xxxxxx/DoubleSG-DTA_Train_main.py num1,num2   (num1:num1 means select the data set, either 1,2,3,  num2:num2 indicates the number of cuda selected)
 
 We currently upload only the training and test sets to simplify the model run time, so that you can train the DoubleSG-DTA model directly and obtain the prediction performance from the test set.
 
