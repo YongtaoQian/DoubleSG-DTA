@@ -1,3 +1,9 @@
+'''
+Author: Yongtao Qian
+Time: 2023-2-5
+model: DoubleSG-DTA
+'''
+
 import pandas as pd
 import numpy as np
 import os
@@ -77,7 +83,9 @@ def seq_drug(smile):
 
 
 
-
+'''
+The drug sequences in the dataset are first converted into the corresponding drug maps, and the drug sequences, drug maps, protein sequences and true affinity values are combined into the same pytorch dataset
+'''
 compound_iso_smiles = []
 for dt_name in ['Davis','KIBA','bindingdb']:
     opts = ['train', 'test']
@@ -90,18 +98,24 @@ for smile in compound_iso_smiles:
     g = smile_to_graph(smile)
     smile_graph[smile] = g
 
+    
+    
 datasets = ['Davis','KIBA','bindingdb']
 # convert to PyTorch data format
 for dataset in datasets:
     processed_data_file_train = 'autodl-tmp/DoubleSG-DTA/data/processed/' + dataset + '_train.pt'
     processed_data_file_test = 'autodl-tmp/DoubleSG-DTA/data/processed/' + dataset + '_test.pt'
     if ((not os.path.isfile(processed_data_file_train)) or (not os.path.isfile(processed_data_file_test))):
+        
         df = pd.read_csv('autodl-tmp/DoubleSG-DTA/data/' + dataset + '_train.csv')
         train_drugs, train_prots, train_Y = list(df['compound_iso_smiles']), list(df['target_sequence']), list(
             df['affinity'])
         XT = [seq_cat(t) for t in train_prots]
         Xd = [seq_drug(t) for t in train_drugs]
         train_drugs, train_prots, train_Y, train_smiles = np.asarray(train_drugs), np.asarray(XT), np.asarray(train_Y), np.asarray(Xd)
+        
+        
+        
         df = pd.read_csv('autodl-tmp/DoubleSG-DTA/data/' + dataset + '_test.csv')
         test_drugs, test_prots, test_Y = list(df['compound_iso_smiles']), list(df['target_sequence']), list(
             df['affinity'])
