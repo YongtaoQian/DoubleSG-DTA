@@ -6,10 +6,36 @@ from torch_geometric.nn import GINConv, global_add_pool
 from torch_geometric.nn import global_mean_pool as gap, global_max_pool as gmp
 import math
 
+# drug sequence && preteion sequence---->Coss Multi-head Attention
 
-# class mutil_head_attention(nn.Module):
-#     def __init__(self,head = 10,conv=32):
-#         super(mutil_head_attention,self).__init__()
+# class mutil_head_attention1(nn.Module):
+#     def __init__(self,head = 8,conv=32):
+#         super(mutil_head_attention1,self).__init__()
+#         self.conv = conv
+#         self.head = head
+#         self.relu = nn.ReLU()
+#         self.tanh = nn.Tanh()
+#         self.d_a = nn.Linear(self.conv * 3, self.conv * 3 * head)
+#         self.p_a = nn.Linear(self.conv * 3, self.conv * 3 * head)
+#         self.scale = torch.sqrt(torch.FloatTensor([self.conv * 3])).cpu()
+
+#     def forward(self, drug, protein):
+#         bsz, d_ef,d_il = drug.shape
+#         bsz, p_ef, p_il = protein.shape
+#         drug_att = self.relu(self.d_a(drug.permute(0, 2, 1))).view(bsz,self.head,d_il,d_ef)
+#         protein_att = self.relu(self.p_a(protein.permute(0, 2, 1))).view(bsz,self.head,p_il,p_ef)
+#         interaction_map = torch.mean(self.tanh(torch.matmul(drug_att, protein_att.permute(0, 1, 3, 2)) / self.scale),1)
+#         Compound_atte = self.tanh(torch.sum(interaction_map, 2)).unsqueeze(1)
+#         Protein_atte = self.tanh(torch.sum(interaction_map, 1)).unsqueeze(1)
+#         drug = drug * Compound_atte
+#         protein = protein * Protein_atte
+#         return drug,protein
+
+
+# drug graph && preteion sequence---->Coss Multi-head Attention
+# class mutil_head_attention2(nn.Module):
+#     def __init__(self,head = 8,conv=32):
+#         super(mutil_head_attention2,self).__init__()
 #         self.conv = conv
 #         self.head = head
 #         self.relu = nn.ReLU()
@@ -146,6 +172,7 @@ class GINConvNet(torch.nn.Module):
         xt = conv_xt.view(-1, 32 * 121)
         xt = self.fc_xt1(xt)
 
+        
         drug_smiles = data.drug_smiles
         embedded_xt1 = self.embedding_xt_smile(drug_smiles)
         # 跳连，将嵌入层加入到FNN中
@@ -158,7 +185,12 @@ class GINConvNet(torch.nn.Module):
         # flatten
         xd = conv_xt2.view(-1, 32 * 121)
         xd = self.fc_xt2(xd)
-
+        
+        
+#         x,xt1 = mutil_head_attention2(x, xt)
+#         xd,xt2 = mutil_head_attention2(xd, xt)
+#         xt = torch.cat(xt1,xt2)
+        
         # concat
         xc = torch.cat((x, xt, xd), 1)
         # add some dense layers
