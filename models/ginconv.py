@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Sequential, Linear, ReLU
+from torch_geometric.nn import global_max_pool
 from torch_geometric.nn import GINConv, global_add_pool
 from torch_geometric.nn import global_mean_pool as gap, global_max_pool as gmp
 import math
@@ -156,7 +157,7 @@ class GINConvNet(torch.nn.Module):
         x = global_add_pool(x, batch)
         x = F.relu(self.fc1_xd(x))
         x = F.dropout(x, p=0.2, training=self.training)
-
+        x = global_max_pool(x, batch)
 
 
         target = data.target
@@ -171,7 +172,7 @@ class GINConvNet(torch.nn.Module):
         # flatten
         xt = conv_xt.view(-1, 32 * 121)
         xt = self.fc_xt1(xt)
-
+        x = global_max_pool(xt, batch)
         
         drug_smiles = data.drug_smiles
         embedded_xt1 = self.embedding_xt_smile(drug_smiles)
@@ -185,7 +186,7 @@ class GINConvNet(torch.nn.Module):
         # flatten
         xd = conv_xt2.view(-1, 32 * 121)
         xd = self.fc_xt2(xd)
-        
+        x = global_max_pool(xd, batch)
         
 #         x,xt1 = mutil_head_attention2(x, xt)
 #         xd,xt2 = mutil_head_attention2(xd, xt)
